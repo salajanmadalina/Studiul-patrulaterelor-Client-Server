@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="0" total="4" passed="4" failed="0" skipped="0">
+  <reporter-output>
+  </reporter-output>
+  <suite started-at="2023-05-22T22:59:14 EEST" name="Command line suite" finished-at="2023-05-22T22:59:14 EEST" duration-ms="857">
+    <groups>
+    </groups>
+    <test started-at="2023-05-22T22:59:14 EEST" name="Command line test" finished-at="2023-05-22T22:59:14 EEST" duration-ms="857">
+      <class name="ConnectionFactoryTest">
+        <test-method signature="testCloseConnection()[pri:0, instance:ConnectionFactoryTest@23a5fd2]" started-at="2023-05-22T22:59:14 EEST" name="testCloseConnection" finished-at="2023-05-22T22:59:14 EEST" duration-ms="599" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testCloseConnection -->
+        <test-method signature="testCloseResultSet()[pri:0, instance:ConnectionFactoryTest@23a5fd2]" started-at="2023-05-22T22:59:14 EEST" name="testCloseResultSet" finished-at="2023-05-22T22:59:14 EEST" duration-ms="80" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testCloseResultSet -->
+        <test-method signature="testCloseStatement()[pri:0, instance:ConnectionFactoryTest@23a5fd2]" started-at="2023-05-22T22:59:14 EEST" name="testCloseStatement" finished-at="2023-05-22T22:59:14 EEST" duration-ms="50" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testCloseStatement -->
+        <test-method signature="testCreateConnection()[pri:0, instance:ConnectionFactoryTest@23a5fd2]" started-at="2023-05-22T22:59:14 EEST" name="testCreateConnection" finished-at="2023-05-22T22:59:14 EEST" duration-ms="43" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testCreateConnection -->
+      </class> <!-- ConnectionFactoryTest -->
+    </test> <!-- Command line test -->
+  </suite> <!-- Command line suite -->
+</testng-results>
