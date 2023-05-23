@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AllUsersCommand implements Command{
     private static final String SERVER_IP = "localhost";
     private static final int SERVER_PORT = 1234;
-    private String response;
+    private List<String> response;
     @Override
     public void execute() {
         try {
@@ -22,7 +24,11 @@ public class AllUsersCommand implements Command{
             writer.println("get_all_users");
 
             // Așteaptă răspunsul de la server
-            response = reader.readLine();
+            response = new ArrayList<>();
+            String line;
+            while((line = reader.readLine()) != null){
+                response.add(line);
+            }
             socket.close();
 
         } catch (IOException e) {
@@ -31,6 +37,10 @@ public class AllUsersCommand implements Command{
     }
 
     public String getAllUsers(){
-        return response;
+        String response1 = "";
+        for(int i  =0; i < response.size(); i ++){
+            response1 += response.get(i) + "\n";
+        }
+        return response1;
     }
 }

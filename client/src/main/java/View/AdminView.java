@@ -26,8 +26,11 @@ public class AdminView extends JFrame {
     private JLabel lblRol;
     private JComboBox<String> languageComboBox;
     private String[] languages = {"ENGLISH", "ITALIAN", "FRENCH"};
+    private JComboBox<String> filterComboBox;
+    private String[] filters = {"ELEV", "ADMIN"};
     private JLabel lblLimba;
     private JScrollPane scrollBar;
+    private JLabel lblFilter;
 
 
     public AdminView(){
@@ -123,10 +126,19 @@ public class AdminView extends JFrame {
         languageComboBox.setBounds(1124, 63, 121, 38);
         frame.getContentPane().add(languageComboBox);
 
+        filterComboBox = new JComboBox<>(filters);
+        filterComboBox.setBounds(1124, 150, 121, 38);
+        frame.getContentPane().add(filterComboBox);
+
         lblLimba = new JLabel("Limba:");
         lblLimba.setFont(new Font("Times New Roman", Font.PLAIN, 25));
         lblLimba.setBounds(1124, 26, 121, 27);
         frame.getContentPane().add(lblLimba);
+
+        lblFilter = new JLabel("Filter");
+        lblFilter.setFont(new Font("Times New Roman", Font.PLAIN, 25));
+        lblFilter.setBounds(1124, 120, 121, 27);
+        frame.getContentPane().add(lblFilter);
 
         frame.setVisible(true);
 

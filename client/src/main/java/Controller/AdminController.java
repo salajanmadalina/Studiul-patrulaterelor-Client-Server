@@ -11,6 +11,7 @@ public class AdminController implements Observer {
     private Command updateUserCommand;
     private Command addUserCommand;
     private Command allUsersCommand;
+    private Command filteredUsersCommand;
 
     public AdminController(Language language, int index) {
         this.adminView = new AdminView();
@@ -39,9 +40,10 @@ public class AdminController implements Observer {
             allUsersCommand = new AllUsersCommand();
             allUsersCommand.execute();
 
-            String info = ((AllUsersCommand)allUsersCommand).getAllUsers();
-
-            adminView.setTextArea(info);
+            if(allUsersCommand instanceof AllUsersCommand){
+                String info = ((AllUsersCommand)allUsersCommand).getAllUsers();
+                adminView.setTextArea(info);
+            }
         });
 
         adminView.getBtnBack().addActionListener(action -> {
@@ -77,6 +79,16 @@ public class AdminController implements Observer {
 
         adminView.getLanguageComboBox().addActionListener(actionListener -> {
             language.setCurrentLanguage(adminView.getLanguageComboBox().getSelectedIndex());
+        });
+
+        adminView.getFilterComboBox().addActionListener(action -> {
+            int filtru = adminView.getFilterComboBox().getSelectedIndex();
+            filteredUsersCommand = new FilterUsersCommand(filtru);
+            filteredUsersCommand.execute();
+
+            if(filteredUsersCommand instanceof FilterUsersCommand){
+                adminView.setTextArea(((FilterUsersCommand) filteredUsersCommand).getAllUsers());
+            }
         });
     }
 

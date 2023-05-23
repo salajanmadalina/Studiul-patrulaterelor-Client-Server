@@ -19,7 +19,7 @@ public class UpdateUserCommand implements  Command{
         return response;
     }
 
-    public UpdateUserCommand(int id,String username, String password, String role){
+    public UpdateUserCommand(int id, String username, String password, String role){
         this.username= username;
         this.password=password;
         this.role=role;
@@ -41,8 +41,7 @@ public class UpdateUserCommand implements  Command{
             writer.println(role);
 
             String response = reader.readLine();
-            System.out.println(response);
-            this.response=response;
+            this.response = response;
             socket.close();
 
         } catch (IOException e) {

@@ -32,6 +32,7 @@ public class UserView extends JFrame {
     private JFreeChart chart2;
     private ChartPanel chartPanel;
     private ChartPanel chartPanel2;
+    private JTextArea raspunsuri;
 
     public UserView() {
 
@@ -47,6 +48,8 @@ public class UserView extends JFrame {
         textArea.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         textArea.setEditable(false);
         frame.getContentPane().add(textArea);
+
+        raspunsuri = new JTextArea();
 
         scrollBar = new JScrollPane(textArea);
         scrollBar.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -151,5 +154,13 @@ public class UserView extends JFrame {
 
     public static void setFrame(JFrame frame) {
         UserView.frame = frame;
+    }
+
+    public void setRaspunsuri(String raspunsuri){
+        this.raspunsuri.setText(raspunsuri);
+    }
+
+    public String getRaspunsuri(){
+        return raspunsuri.getText();
     }
 }
