@@ -10,16 +10,36 @@ public class Intrebare {
     private String raspuns;
     private int id;
 
-    public Intrebare(String intrebare, String raspuns, int id) {
-        this.intrebare = intrebare;
-        this.raspuns = raspuns;
-        this.id = id;
+    private Intrebare(IntrebareBuilder intrebareBuilder) {
+        this.intrebare = intrebareBuilder.intrebare;
+        this.raspuns = intrebareBuilder.raspuns;
+        this.id = intrebareBuilder.id;
     }
 
-    public Intrebare(){}
+    private Intrebare(){}
 
     @Override
     public String toString() {
-        return  intrebare + '\'';
+        return  intrebare + "\n";
+    }
+
+    public class IntrebareBuilder{
+        private String intrebare;
+        private String raspuns;
+        private int id;
+
+        public IntrebareBuilder(String intrebare, String raspuns, int id) {
+            this.intrebare = intrebare;
+            this.raspuns = raspuns;
+            this.id = id;
+        }
+
+        public IntrebareBuilder(){
+
+        }
+
+        public Intrebare build(){
+            return new Intrebare(this);
+        }
     }
 }

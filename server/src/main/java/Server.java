@@ -1,4 +1,8 @@
-import Model.Dao.UserDAO;
+import Service.IntrebareService;
+import Service.TestService;
+import Service.UserService;
+import Model.Intrebare;
+import Model.Test;
 import Model.User;
 
 import java.io.BufferedReader;
@@ -8,7 +12,9 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Server {
     private static final int PORT = 1234;
@@ -43,7 +49,6 @@ public class Server {
                 // Verificarea autentificării utilizatorului
                 String isAuthenticated = authentificateUser(username, password);
                 String id = getUserId(username, password);
-                System.out.println(isAuthenticated);
                 writer.println(isAuthenticated);
                 writer.println(id);
                 writer.println();
@@ -53,6 +58,21 @@ public class Server {
                 String response = userListToString(userList);
                 writer.println(response);
 
+            }  else if (request.trim().equals("get_all_tests")) {
+                List<Test> testList = getAllTests();
+                String response = testListToString(testList);
+                writer.println(response);
+
+              } else if(request.trim().equals("get_all_questions")){
+                List<Intrebare> questions = getAllQuestions();
+                String response = questionsListToString(questions);
+                writer.println(response);
+
+            } else if(request.trim().equals("get_all_responses")){
+                List<String> responses = getAllResponses();
+                String response = responsesListToString(responses);
+                writer.println(response);
+
             } else if (request.trim().equals("add_user")) {
                 // Cererea de adăugare a unui utilizator
                 String username = reader.readLine();
@@ -60,11 +80,22 @@ public class Server {
                 String role = reader.readLine();
                 int id = getAllUsers().size() + 2;
 
-                User newUser = new User(username, password, role, id);
+                User newUser = new User.UserBuilder(username, password, role, id).build();
                 addUser(newUser);
                 writer.println("User added successfully.");
 
-            } else if (request.trim().equals("delete_user")) {
+            } else if (request.trim().equals("add_test")) {
+                // Cererea de adăugare a unui test
+                String id = reader.readLine();
+                String punctaj = reader.readLine();
+                String intrebari = reader.readLine();
+                String idUser = reader.readLine();
+
+                Test newTest = new Test.TestBuilder(Integer.parseInt(id), Integer.parseInt(punctaj), intrebari, Integer.parseInt(idUser)).build();
+                addTest(newTest);
+                writer.println("Test added successfully.");
+
+            }else if (request.trim().equals("delete_user")) {
                 // Cererea de ștergere a unui utilizator
                 int userId = Integer.parseInt(reader.readLine());
                 deleteUser(userId);
@@ -79,13 +110,57 @@ public class Server {
 
                 updateUser(Integer.parseInt(id), newUsername, newPassword, newRole);
                 writer.println("User updated successfully.");
-//            } else if (request.trim().equals("get_all_filtered_products")) {
-//                String condition = reader.readLine();
-//                String criteria = reader.readLine();
-//
-//                List<Product> productsList = getAllFilteredProducts(criteria, condition);
-//                String response = productListToString(productsList);
-//                writer.println(response);
+
+            } else if (request.trim().equals("update_test")) {
+                // Cererea de actualizare a unui test
+                String id = reader.readLine();
+                String punctaj = reader.readLine();
+
+                updateTest(Integer.parseInt(id), Integer.parseInt(punctaj));
+                writer.println("Test updated successfully.");
+
+            } else if(request.trim().equals("graphics1")){
+                ArrayList<Integer> statistics = new ArrayList<Integer>(Collections.nCopies(11, 0));
+
+                TestService testService = new TestService();
+                ArrayList<Test> tests = (ArrayList<Test>)testService.findAll();
+                for(Test test: tests){
+                    int punctaj = test.getPunctaj();
+                    int value = statistics.get(punctaj);
+                    statistics.set(punctaj, value + 1);
+                }
+
+                String response = "";
+                for (Integer statistic : statistics) {
+                    response += (100 * statistic) / tests.size() + ",";
+                }
+
+                writer.println(response);
+            }
+            else if(request.trim().equals("graphics2")){
+                ArrayList<Integer> statistics = new ArrayList<Integer>(Collections.nCopies(11, 0));
+
+                TestService testService = new TestService();
+                ArrayList<Test> tests = (ArrayList<Test>) testService.findAll();
+                String response = "";
+
+                for(Test test: tests){
+                    int punctaj = test.getPunctaj();
+                    int value = statistics.get(punctaj);
+                    statistics.set(punctaj, value + 1);
+                }
+
+                for (Integer statistic : statistics) {
+                    response += statistic + ",";
+                }
+
+                writer.println(response);
+            } else if (request.trim().equals("get_filtered_users")) {
+                String condition = reader.readLine();
+
+                List<User> userList = getFilteredUsers(Integer.parseInt(condition));
+                String response = userListToString(userList);
+                writer.println(response);
             }
             clientSocket.close();
         } catch (IOException e) {
@@ -94,8 +169,8 @@ public class Server {
     }
 
     private static String authentificateUser(String username, String password) {
-        UserDAO userDAO = new UserDAO();
-        ArrayList<User> users = (ArrayList<User>)userDAO.findAll();
+        UserService userService = new UserService();
+        ArrayList<User> users = (ArrayList<User>) userService.findAll();
 
         User user = getRegisteredUser(users, username, password);
 
@@ -120,8 +195,8 @@ public class Server {
     }
 
     private static String getUserId(String username, String password){
-        UserDAO userDAO = new UserDAO();
-        ArrayList<User> users = (ArrayList<User>)userDAO.findAll();
+        UserService userService = new UserService();
+        ArrayList<User> users = (ArrayList<User>) userService.findAll();
 
         User user = getRegisteredUser(users, username, password);
 
@@ -130,10 +205,58 @@ public class Server {
 
     private static List<User> getAllUsers() {
         // Obțineți lista de utilizatori din baza de date sau din sursa de date corespunzătoare
-        UserDAO userDAO = new UserDAO();
-        List<User> userList = userDAO.findAll();
+        UserService userService = new UserService();
+        List<User> userList = userService.findAll();
 
         return userList;
+    }
+
+    private static List<User> getFilteredUsers(int filtru) {
+        // Obțineți lista de utilizatori din baza de date sau din sursa de date corespunzătoare
+        UserService userService = new UserService();
+        String targetRol;
+
+        if(filtru == 0){
+            targetRol = "ELEV";
+        }
+        else{
+            targetRol = "ADMIN";
+        }
+
+        List<User> filteredList = userService.findAll().stream()
+                .filter(user -> user.getRol().equals(targetRol))
+                .collect(Collectors.toList());
+
+        return filteredList;
+    }
+
+    private static List<Test> getAllTests() {
+        // Obțineți lista de teste din baza de date sau din sursa de date corespunzătoare
+        TestService testService = new TestService();
+        List<Test> testList = testService.findAll();
+
+        return testList;
+    }
+
+    private static List<Intrebare> getAllQuestions() {
+        // Obțineți lista de intrebari din baza de date sau din sursa de date corespunzătoare
+        IntrebareService intrebareService = new IntrebareService();
+        List<Intrebare> questionList = intrebareService.findAll();
+
+        return questionList;
+    }
+
+    private static List<String> getAllResponses() {
+        // Obțineți lista de intrebari din baza de date sau din sursa de date corespunzătoare
+        IntrebareService intrebareService = new IntrebareService();
+        List<Intrebare> questionList = intrebareService.findAll();
+        List<String> responses = new ArrayList<>();
+
+        for(Intrebare intrebare: questionList){
+            responses.add(intrebare.getRaspuns() + "\n");
+        }
+
+        return responses;
     }
 
     private static String userListToString(List<User> userList) {
@@ -144,35 +267,69 @@ public class Server {
         return sb.toString();
     }
 
+    private static String testListToString(List<Test> testList) {
+        StringBuilder sb = new StringBuilder();
+        for (Test test: testList) {
+            sb.append(test.toString());
+        }
+        return sb.toString();
+    }
+
+    private static String questionsListToString(List<Intrebare> questionList){
+        StringBuilder sb = new StringBuilder();
+        for (Intrebare intrebare: questionList) {
+            sb.append(intrebare.toString());
+        }
+        return sb.toString();
+    }
+
+    private static String responsesListToString(List<String> responses){
+        StringBuilder sb = new StringBuilder();
+        for (String str: responses) {
+            sb.append(str);
+        }
+        return sb.toString();
+    }
+
     private static void addUser(User user) {
         // Adăugați utilizatorul în baza de date sau în sursa de date corespunzătoare
-        UserDAO userDAO = new UserDAO();
-        userDAO.insert(user);
+        UserService userService = new UserService();
+        userService.insert(user);
+    }
+
+    private static void addTest(Test test) {
+        // Adăugați testul în baza de date sau în sursa de date corespunzătoare
+        TestService testService = new TestService();
+        testService.insert(test);
     }
 
     private static void deleteUser(int id) {
-        UserDAO userDAO = new UserDAO();
-        User user =  userDAO.findById(id);
+        UserService userService = new UserService();
+        User user =  userService.findById(id);
 
         if(user != null){
-            userDAO.delete(id);
+            userService.delete(id);
         }
     }
 
     private static void updateUser(int id, String username, String password, String role) {
-        UserDAO userDAO = new UserDAO();
+        UserService userService = new UserService();
 
         if(!username.isEmpty()){
-            userDAO.update("nume", username, id);
+            userService.update("nume", username, id);
         }
         if(!password.isEmpty()){
-            userDAO.update("password", password, id);
+            userService.update("password", password, id);
         }
         if(!role.isEmpty()){
-            userDAO.update("rol", role, id);
+            userService.update("rol", role, id);
         }
     }
 
+    private static void updateTest(int id, int punctaj){
+        TestService testService = new TestService();
 
+        testService.update("punctaj", String.valueOf(punctaj), id);
+    }
 
 }
